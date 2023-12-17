@@ -1,0 +1,11 @@
+name: 'Gavias Webform Element'
+type: module
+package: 'gavias'
+description : Gavias Webform Elements
+
+dependencies:
+  - 'drupal:webform'
+
+core_version_requirement: ^8 || ^9
+project: 'gavias_webform_element'
+datestamp: 1505244429
