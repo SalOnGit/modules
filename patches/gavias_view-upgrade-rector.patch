@@ -1,0 +1,32 @@
+Index: web/modules/custom/gavias_view/gavias_view.module:0
+@@ @@
+ <?php
+
++use Drupal\taxonomy\Entity\Vocabulary;
+ use Drupal\Core\Field;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Language\LanguageInterface;
+@@ @@
+         if(isset($f['target_id']) && $f['target_id']) $tid .= ' ' . $f['target_id'];
+       }
+     }
+-    $variables['rows'][$key] = '<div class="' . "{$xclass} {$tid}" . '">' . render($variables['rows'][$key]) . '</div>';
++    $variables['rows'][$key] = '<div class="' . "{$xclass} {$tid}" . '">' . \Drupal::service('renderer')->render($variables['rows'][$key]) . '</div>';
+   }
+
+   $langcode = \Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
+@@ @@
+
+ function gavias_view_get_all_taxonomy(){
+   $list = array();
+-  $vocabularies = \Drupal\taxonomy\Entity\Vocabulary::loadMultiple();
++  $vocabularies = Vocabulary::loadMultiple();
+   foreach($vocabularies as $taxonomy){
+     $list[$taxonomy->get('vid')] = $taxonomy->get('name');
+   }
+@@ @@
+       $randomString .= $characters[rand(0, strlen($characters) - 1)];
+   }
+   return $randomString;
+-}
++}

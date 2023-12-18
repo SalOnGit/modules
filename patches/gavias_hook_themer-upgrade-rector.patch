@@ -1,0 +1,35 @@
+Index: web/modules/custom/gavias_gito_custom/gavias_hook_themer.module:0
+@@ @@
+ <?php
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\node\Entity\Node;
+ use Drupal\Core\Entity\EntityTypeInterface;
+ use Drupal\Core\Field\FieldDefinition;
+ use Drupal\Core\Field\BaseFieldDefinition;
+@@ @@
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
+-function gavias_hook_themer_form_node_form_alter(&$form, \Drupal\Core\Form\FormStateInterface &$form_state, $form_id) {
++function gavias_hook_themer_form_node_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
+   unset($form['gavias_blockbuilder_layout']);
+   unset($form['gva_shortcode']);
+
+@@ @@
+   $path_args = explode('/', $path);
+   $node_id = 0;
+   if (isset($path_args[1]) && isset($path_args[2]) && ($path_args[1] == 'node') && (is_numeric($path_args[2]))) {
+-    $node = \Drupal\node\Entity\Node::load($path_args[2]);
++    $node = Node::load($path_args[2]);
+     if($node->id()){
+       $node_id = $node->id();
+     }
+@@ @@
+   $path = \Drupal::service('path.current')->getPath();
+   $path_args = explode('/', $path);
+   if (isset($path_args[1]) && isset($path_args[2]) && ($path_args[1] == 'node') && (is_numeric($path_args[2]))) {
+-    $node = \Drupal\node\Entity\Node::load($path_args[2]);
++    $node = Node::load($path_args[2]);
+     if($node && $node->hasField('gva_node_class')){
+       $class_body = $node->get('gva_node_class')->getValue();
+       if(isset($class_body) && !empty($class_body[0])) {

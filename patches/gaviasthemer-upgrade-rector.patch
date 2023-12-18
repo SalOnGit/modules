@@ -1,0 +1,73 @@
+Index: web/modules/custom/gaviasthemer/gaviasthemer.module:0
+@@ @@
+ <?php
+
++use Drupal\Core\Entity\EntityInterface;
++use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
++use Drupal\node\NodeInterface;
+ use Drupal\Core\Menu\MenuTreeParameters;
+ use Drupal\Core\Template\Attribute;
+ use Drupal\Core\Form\FormStateInterface;
+@@ @@
+ use Drupal\block\Entity\Block;
+
+ define( 'GAVIASTHEMER_VERSION', '1.0' );
+-define( 'GAVIASTHEMER_PATH', drupal_get_path('module', 'gaviasthemer') );
++define( 'GAVIASTHEMER_PATH', \Drupal::service('extension.list.module')->getPath('gaviasthemer') );
+
+ function gaviasthemer_get_blocks_options() {
+   static $_blocks_array = array();
+@@ @@
+     // Get default theme for user.
+     $theme_default = \Drupal::config('system.theme')->get('default');
+     // Get storage handler of block.
+-    $block_storage = \Drupal::entityManager()->getStorage('block');
++    $block_storage = \Drupal::service('entity_type.manager')->getStorage('block');
+     // Get the enabled block in the default theme.
+     $entity_ids = $block_storage->getQuery()->condition('theme', $theme_default)->execute();
+     $entities = $block_storage->loadMultiple($entity_ids);
+@@ @@
+ }
+
+ function gaviasthemer_render_block($key) {
+-  $block = \Drupal\block\Entity\Block::load($key);
++  $block = Block::load($key);
+   $block_content = \Drupal::entityManager()
+     ->getViewBuilder('block')
+     ->view($block);
+
+-return drupal_render($block_content);
++return \Drupal::service('renderer')->render($block_content);
+
+   }
+
+@@ @@
+ /**
+  * Implements hook_form_FORM_ID_alter().
+  */
+-function gaviasthemer_form_block_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
++function gaviasthemer_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+   /** @var \Drupal\block\BlockInterface $block */
+   $block = $form_state->getFormObject()->getEntity();
+   $_id = $block->ID();
+@@ @@
+
+  function gaviasthemer_validate_path($path) {
+   // Absolute local file paths are invalid.
+-  if (drupal_realpath($path) == $path) {
++  if (\Drupal::service('file_system')->realpath($path) == $path) {
+     return FALSE;
+   }
+   // A path relative to the Drupal root or a fully qualified URI is valid.
+@@ @@
+ /**
+ * Implements hook_entity_view_alter().
+ */
+-function gaviasthemer_entity_view_alter(array &$build, Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display) {
++function gaviasthemer_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+   // Cheking view_mode for node.
+-  if ($build['#view_mode'] === 'full' && $entity Instanceof \Drupal\node\NodeInterface) {
++  if ($build['#view_mode'] === 'full' && $entity Instanceof NodeInterface) {
+     // Cheking html_head_link on attached tags in head.
+     if (!isset($build['#attached']['html_head_link'])) return;
+     // Array to unset.
